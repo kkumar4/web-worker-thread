@@ -1,8 +1,8 @@
 # Description
     npm package for off-loading CPU intensive tasks to web worker.
 # Installation
-    `npm i worker-thread --save`
-    ```
+    npm i worker-thread --save
+
     import workerThread from 'worker-thread';
 
     workerThread({
@@ -18,5 +18,3 @@
         return res;
       }, 0);
     }
-    
-    ```
