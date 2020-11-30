@@ -1,4 +1,8 @@
-(function () {
+export default function workerThread({
+  fn,
+  args = [],
+  context
+}) {
   function workerFunction() {
     function getFunctionParametersAndBody(fn) {
       try {
@@ -67,85 +71,51 @@
     }
   }
 
-  function workerThread({
-    fn,
-    args = [],
-    context
-  }) {
-    return new Promise((resolve, reject) => {
-      if (!fn) {
-        reject('function not provided');
+  return new Promise((resolve, reject) => {
+    if (!fn) {
+      reject('function not provided');
+    }
+
+    if (Object.getPrototypeOf(fn) === Function.prototype) {
+      const blobData = `(${workerFunction})()`;
+      const blob = new Blob([blobData], {
+        type: 'application/javascript'
+      });
+
+      // create URL for this blob object
+      const blobURL = URL.createObjectURL(blob);
+      const worker = new Worker(blobURL);
+
+      const workerData = {
+        fn,
+        args,
+        context
       }
 
-      if (Object.getPrototypeOf(fn) === Function.prototype) {
-        const blobData = `(${workerFunction})()`;
-        const blob = new Blob([blobData], {
-          type: 'application/javascript'
-        });
-
-        // create URL for this blob object
-        const blobURL = URL.createObjectURL(blob);
-        const worker = new Worker(blobURL);
-
-        const workerData = {
-          fn,
-          args,
-          context
+      const stringifiedWorkerData = JSON.stringify(workerData, (_, value) => {
+        if (typeof value === 'function') {
+          return `__function__${value.toString()}`
         }
+        return value;
+      })
 
-        const stringifiedWorkerData = JSON.stringify(workerData, (_, value) => {
-          if (typeof value === 'function') {
-            return `__function__${value.toString()}`
-          }
-          return value;
-        })
+      worker.postMessage(stringifiedWorkerData);
 
-        worker.postMessage(stringifiedWorkerData);
-
-        worker.onmessage = e => {
-          worker.terminate();
-          const {
-            isSuccessful,
-            result,
-            errorMessage
-          } = e.data;
-          if (isSuccessful) {
-            resolve(result);
-          } else {
-            reject(errorMessage)
-          }
+      worker.onmessage = e => {
+        worker.terminate();
+        const {
+          isSuccessful,
+          result,
+          errorMessage
+        } = e.data;
+        if (isSuccessful) {
+          resolve(result);
+        } else {
+          reject(errorMessage)
         }
-      } else {
-        reject('fn must of type function');
       }
-    })
-  }
-
-  window.workerThread = workerThread;
-})();
-
-window.workerThread({
-  fn: adder,
-  args: [1, 2, 3]
-})
-  .then(result => console.log(result))
-  .catch(error => console.log(error));
-
-function adder(a, b, ...nums) {
-  return a + b + nums.reduce((res, num) => {
-    res += num;
-    return res;
-  }, 0);
-}
-
-function randomNoGenerator(max, min) {
-  function generateRandomNumber(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
-
-  let randomNos = [];
-  for (let i = 0; i < 10000000; i++) {
-    randomNos.push(generateRandomNumber(min, max));
-  }
-  return randomNos;
+    } else {
+      reject('fn must of type function');
+    }
+  })
 }
