@@ -1,4 +1,4 @@
-import workerThread from '../src.js';
+import webWorkerThread from '../src';
 
 function adder(a, b, ...nums) {
   return a + b + nums.reduce((res, num) => {
@@ -7,7 +7,7 @@ function adder(a, b, ...nums) {
   }, 0);
 }
 
-workerThread({
+webWorkerThread({
   fn: adder,
   args: [1, 2, 3]
 })
@@ -26,7 +26,7 @@ function randomNoGenerator(max, min) {
   return randomNos;
 }
 
-workerThread({
+webWorkerThread({
   fn: randomNoGenerator,
   args: [1, 10]
 })
@@ -44,7 +44,7 @@ Person.prototype.getFullName = function () {
 
 const john = new Person('John', 'Doe');
 
-workerThread({
+webWorkerThread({
   fn: john.getFullName,
   context: john
 })

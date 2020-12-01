@@ -1,4 +1,4 @@
-export default function workerThread({
+export default function webWorkerThread({
   fn,
   args = [],
   context
