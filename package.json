@@ -1,6 +1,6 @@
 {
   "name": "web-worker-thread",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "off-load CPU intensive tasks to web worker.",
   "main": "src.js",
   "directories": {
