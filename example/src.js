@@ -25,3 +25,21 @@ function randomNoGenerator(max, min) {
   }
   return randomNos;
 }
+
+function Person(firstName, lastName) {
+  this.firstName = firstName;
+  this.lastName = lastName;
+}
+
+Person.prototype.getFullName = function () {
+  return `${this.firstName} ${this.lastName}`;
+}
+
+const john = new Person('John', 'Doe');
+
+workerThread({
+  fn: john.getFullName,
+  context: john
+})
+  .then(result => console.log(result))
+  .catch(error => console.error(error));

@@ -1,0 +1,25 @@
+{
+  "name": "web-worker-thread",
+  "version": "1.0.0",
+  "description": "off-load CPU intensive tasks to web worker.",
+  "main": "src.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkumar4/worker-thread.git"
+  },
+  "keywords": [
+    "web-worker-thread"
+  ],
+  "author": "Kunal Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkumar4/worker-thread/issues"
+  },
+  "homepage": "https://github.com/kkumar4/worker-thread#readme"
+}
