@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kkumar4/worker-thread.git"
+    "url": "git+https://github.com/kkumar4/web-worker-thread.git"
   },
   "keywords": [
     "web-worker-thread"
@@ -19,7 +19,7 @@
   "author": "Kunal Kumar",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kkumar4/worker-thread/issues"
+    "url": "https://github.com/kkumar4/web-worker-thread/issues"
   },
-  "homepage": "https://github.com/kkumar4/worker-thread#readme"
+  "homepage": "https://github.com/kkumar4/web-worker-thread#readme"
 }
