@@ -1,5 +1,6 @@
 # Description
     A promise based npm package for off-loading CPU intensive tasks to the web worker.
+    This package has no dependency on any external package and works on all modern browsers.
 
 # Installation
     npm i web-worker-thread --save
