@@ -1,26 +1,13 @@
-import webWorkerThread from '../src.js';
+import webWorkerThread from '../src/index.js';
 
-function adder(a, b, ...nums) {
-  return a + b + nums.reduce((res, num) => {
-    res += num;
-    return res;
-  }, 0);
-}
-
-webWorkerThread({
-  fn: adder,
-  args: [1, 2, 3]
-})
-  .then(result => console.log(result))
-  .catch(error => console.log(error));
-
+// Normal function
 function randomNoGenerator(max, min) {
-  function generateRandomNumber(min, max) {
+  const generateRandomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   let randomNos = [];
-  for (let i = 0; i < 100000; i++) {
+  for (let i = 0; i < 1000000; i++) {
     randomNos.push(generateRandomNumber(min, max));
   }
   return randomNos;
@@ -33,6 +20,8 @@ webWorkerThread({
   .then(result => console.log(result))
   .catch(error => console.log(error));
 
+
+// Object Method
 function Person(firstName, lastName) {
   this.firstName = firstName;
   this.lastName = lastName;
@@ -51,6 +40,7 @@ webWorkerThread({
   .then(result => console.log(result))
   .catch(error => console.error(error));
 
+// Async Function
 async function getUsers() {
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/users');
