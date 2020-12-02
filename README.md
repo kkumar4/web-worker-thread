@@ -70,7 +70,7 @@
       .catch(error => console.error(error));
   ```
 
-#### Object Method
+#### Async Function
 
   ```
     import webWorkerThread from 'web-worker-thread';
