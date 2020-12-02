@@ -4,12 +4,20 @@ export default function webWorkerThread({
   context
 }) {
   function workerFunction() {
-    function getFunctionParametersAndBody(fn) {
+    function _isAsyncFunction(fn) {
+      return fn instanceof (async function () { }).constructor;
+    }
+
+    function getFunctionTypeParametersAndBody(fn) {
       try {
         let
           fnParams = '',
-          fnBody = ''
+          fnBody = '',
+          isAsyncFunction = fn.startsWith('async')
           ;
+        if (isAsyncFunction) {
+          fn = fn.slice(5).trim();
+        }
         if (fn.startsWith('function') || fn.match(/^[$A-Z_][0-9A-Z_$]*[\s]*\(/i)) {
           // get parameters between opening and closing parentheses
           fnParams = fn.slice(fn.indexOf('(') + 1, fn.indexOf(')'));
@@ -36,19 +44,29 @@ export default function webWorkerThread({
         }
         return {
           fnParams,
-          fnBody
+          fnBody,
+          isAsyncFunction
         }
       } catch (e) {
         throw new Error('something went wrong while getting function parameters and body');
       }
     }
 
-    self.onmessage = function (e) {
+    self.onmessage = async function (e) {
       try {
         const data = JSON.parse(e.data, function (_, value) {
           if (typeof value === 'string' && value.startsWith('__function__')) {
-            const { fnParams, fnBody } = getFunctionParametersAndBody(value.slice(12));
-            return new Function(fnParams, fnBody);
+            const {
+              fnParams,
+              fnBody,
+              isAsyncFunction
+            } = getFunctionTypeParametersAndBody(value.slice(12));
+            if (!isAsyncFunction) {
+              return new Function(fnParams, fnBody);
+            } else {
+              const AsyncFunctionConstructor = Object.getPrototypeOf(async function () { }).constructor;
+              return new AsyncFunctionConstructor(fnParams, fnBody);
+            }
           }
           return value;
         });
@@ -57,7 +75,13 @@ export default function webWorkerThread({
           args,
           context = self
         } = data;
-        const result = fn.call(context, ...args);
+        let result;
+        if (_isAsyncFunction(fn)) {
+          result = await fn.call(context, ...args);
+        } else {
+          result = fn.call(context, ...args);
+        }
+
         self.postMessage({
           result,
           isSuccessful: true
@@ -71,12 +95,23 @@ export default function webWorkerThread({
     }
   }
 
+  function _isRegularFunction(fn) {
+    return Object.getPrototypeOf(fn) === Function.prototype;
+  }
+
+  function _isAsyncFunction(fn) {
+    return fn instanceof async function () { }.constructor;
+  }
+
   return new Promise((resolve, reject) => {
     if (!fn) {
       reject('function not provided');
     }
 
-    if (Object.getPrototypeOf(fn) === Function.prototype) {
+    const isRefularFunction = _isRegularFunction(fn);
+    const isAsyncFunction = isRefularFunction ? false : _isAsyncFunction(fn);
+
+    if (isRefularFunction || isAsyncFunction) {
       const blobData = `(${workerFunction})()`;
       const blob = new Blob([blobData], {
         type: 'application/javascript'
@@ -115,7 +150,7 @@ export default function webWorkerThread({
         }
       }
     } else {
-      reject('fn must of type function');
+      reject('fn should be a function');
     }
   })
 }

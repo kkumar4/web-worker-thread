@@ -1,4 +1,4 @@
-import webWorkerThread from '../src';
+import webWorkerThread from '../src.js';
 
 function adder(a, b, ...nums) {
   return a + b + nums.reduce((res, num) => {
@@ -50,3 +50,19 @@ webWorkerThread({
 })
   .then(result => console.log(result))
   .catch(error => console.error(error));
+
+async function getUsers() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    return [];
+  }
+}
+
+webWorkerThread({
+  fn: getUsers
+})
+  .then(data => console.log(data))
+  .catch(error => console.log(error))
