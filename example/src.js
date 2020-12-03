@@ -1,4 +1,4 @@
-import webWorkerThread from '../src/index.js';
+import webWorkerThread from '../dist/index.js';
 
 // Normal function
 function randomNoGenerator(max, min) {
